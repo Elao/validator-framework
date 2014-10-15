@@ -1,17 +1,40 @@
 {
-  "name": "test",
+  "name": "validator-framework",
   "version": "0.0.1",
-  "description": "",
+  "description": "Objects Validator Framework (supports: Async validation, validation groups, nested objects, ...)",
   "main": "./src/validator.js",
+  "keywords": [
+    "object validation",
+    "framework",
+    "async validation",
+    "promises",
+    "validation groups",
+    "nested objects",
+    "validation rules",
+    "custom validators"
+  ],
   "scripts": {
     "test": "gulp test"
+  },
+  "homepage": "https://github.com/elao/validator-framework",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/elao/validator-framework.git"
+  },
+  "bugs": {
+    "url": "http://github.com/elao/validator-framework/issues"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "author": {
+    "name": "Elao",
+    "email": "contact@elao.com",
+    "url": "http://github.com/elao/"
   },
   "dependencies": {
     "bluebird": "^2.0",
     "lodash": "^2.4.1"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "mocha": "^1.21.4",
     "chai": "^1.9.1",
