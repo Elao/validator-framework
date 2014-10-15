@@ -1,8 +1,26 @@
 {
   "name": "validator-framework",
-  "version": "0.0.1",
   "description": "Objects Validator Framework (supports: Async validation, validation groups, nested objects, ...)",
-  "main": "./src/validator.js",
+  "version": "0.1.0",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.githubusercontent.com/Elao/validator-framework/master/LICENSE"
+    }
+  ],
+  "homepage": "https://github.com/Elao/validator-framework",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Elao/validator-framework.git"
+  },
+  "bugs": {
+    "url": "http://github.com/Elao/validator-framework/issues"
+  },
+  "author": {
+    "name": "Elao",
+    "email": "contact@elao.com",
+    "url": "http://www.elao.com/"
+  },
   "keywords": [
     "object validation",
     "framework",
@@ -13,24 +31,7 @@
     "validation rules",
     "custom validators"
   ],
-  "scripts": {
-    "test": "gulp test"
-  },
-  "homepage": "https://github.com/elao/validator-framework",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/elao/validator-framework.git"
-  },
-  "bugs": {
-    "url": "http://github.com/elao/validator-framework/issues"
-  },
-  "license": "MIT",
-  "readmeFilename": "README.md",
-  "author": {
-    "name": "Elao",
-    "email": "contact@elao.com",
-    "url": "http://github.com/elao/"
-  },
+  "main": "./src/validator.js",
   "dependencies": {
     "bluebird": "^2.0",
     "lodash": "^2.4.1"
@@ -43,5 +44,8 @@
     "gulp-util": "^3.0.1",
     "gulp-jshint": "^1.8.4",
     "chai-as-promised": "^4.1.1"
+  },
+  "scripts": {
+    "test": "gulp test"
   }
 }
