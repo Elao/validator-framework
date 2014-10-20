@@ -16,13 +16,13 @@ describe('#Validator', function() {
         return validator.Validator('required', true).should.be.an.object;
     });
     it('should raised an exception with empty rules', function() {
-        return expect(function(){validator.Validator('required')}).to.throw(validator.RulesConfigurationError);
+        return expect(function(){validator.Validator('required').validate()}).to.throw(validator.RulesConfigurationError);
     });
     it('should raised an exception with empty rules', function() {
-        return expect(function(){validator.Validator('required', {})}).to.throw(validator.RulesConfigurationError);
+        return expect(function(){validator.Validator('required', {}).validate()}).to.throw(validator.RulesConfigurationError);
     });
     it('shoud raised an exception with unknow rule type', function() {
-        return expect(function(){validator.Validator('unknowtype')}).to.throw(validator.RulesConfigurationError);
+        return expect(function(){validator.Validator('unknowtype').validate()}).to.throw(validator.RulesConfigurationError);
     });
 });
 

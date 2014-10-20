@@ -163,9 +163,14 @@
      */
     ObjectValidatorError.prototype.flat = function()
     {
-        var errors = {};
+        var errors = {}; 
         console.log(this.fieldErrors);
         _.each(this.fieldErrors, function(fieldError) {
+
+            if(fieldError.name === 'RulesConfigurationError') {
+                throw fieldError;
+            }
+
             errors = _.merge(errors, fieldError.flat());
         });
         _.each(this.globalErrors, function(globalError) {
@@ -255,6 +260,7 @@
                 var errors         = [];
                 var postValidators = [];
                 var postPromises   = [];
+                var cleanFields = [];
 
                 _.each(promisesResults, function(promiseResult) {
                     if (promiseResult.isRejected()) {
@@ -263,6 +269,10 @@
                         } else {
                             errors.push(promiseResult.reason());
                         }
+                    }
+
+                    if(promiseResult.isFulfilled() && promiseResult.value() != null) {
+                        cleanFields.push(promiseResult.value());
                     }
                 });
 
@@ -278,12 +288,16 @@
                                 globalErrors.push(promiseResult.reason());
                             }
                         }
+
+                        if(promiseResult.isFulfilled() && promiseResult.value() != null) {
+                            cleanFields.push(promiseResult.value());
+                        }
                     });
 
                     if (errors.length > 0 || globalErrors.length > 0) {
                         reject(new ObjectValidatorError(self.path, objectData, errors, globalErrors));
                     } else {
-                        resolve();
+                        resolve(cleanFields);
                     }
                 });
             });
@@ -417,7 +431,12 @@
 
             _.each(self.rules, function(ruleConfig, ruleType) {
                 if (ruleType == 'required') {
-                    return;
+
+                    // To have same result object than others validator
+                    var validator = new Validator(ruleType, ruleConfig);
+                    validator.setParent(self);
+                    promises.push(Promise.resolve(validator.getCleanData(fieldData)));
+
                 } else if (ruleType == 'contentObjects') {
                     contentType   = 'objects';
                     contentConfig = ruleConfig;
@@ -450,6 +469,7 @@
             Promise.settle(promises).then(function(promisesResults) {
                 var errors        = [];
                 var errorsContent = [];
+                var cleanFields = [];
 
                 _.each(promisesResults, function(promiseResult, ri) {
                     if (promiseResult.isRejected()) {
@@ -468,12 +488,16 @@
                             }
                         }
                     }
+
+                    if(promiseResult.isFulfilled()) {
+                        cleanFields.push(promiseResult.value());
+                    }
                 });
 
                 if (errors.length > 0 || errorsContent.length > 0) {
                     return reject(self.getFieldErrors(self.getPath(), fieldData, errors, errorsContent));
                 } else {
-                    resolve();
+                    resolve(_.uniq(_.filter(cleanFields, function(obj){ return obj != undefined && obj.value != undefined}), "field")[0]);
                 }
             });
         });
@@ -504,14 +528,6 @@
         this.fieldValidator = undefined;
         this.parent         = undefined;
 
-        if (!type || !_.isString(type)) {
-            throw new RulesConfigurationError("Invalid validator type");
-        }
-
-        if (!rules[type]) {
-            throw new RulesConfigurationError("Validator type "+type+" not found");
-        }
-
         if (typeof(config) === 'object') {
             this.groups = config.groups;
 
@@ -523,10 +539,6 @@
 
         } else if (!_.isUndefined(config)) {
             this.value = config;
-        }
-
-        if (!this.value) {
-            throw new RulesConfigurationError("No value property found");
         }
 
         return this;
@@ -582,7 +594,7 @@
         } else if (_.isFunction(message)) {
             message = message(fieldName);
         } else {
-            throw new RulesConfigurationError("Invalid error message set for type");
+            throw new RulesConfigurationError("Invalid error message set for type", this.type);
         }
 
         message = message.replace(/%%fieldLabel%%/gi, fieldLabel)
@@ -591,9 +603,35 @@
         return message;
     };
 
+    Validator.prototype.getCleanData = function(data) {
+
+        var fieldLabel = this.getParent() ? this.getParent().path: 'arg';
+
+        return {
+            field: fieldLabel,
+            value: data
+        };
+    }
+
     Validator.prototype.doValidate = function(data)
     {
         var self = this;
+
+         
+        var type = this.type;
+        var path = self.getParent() != undefined && self.getParent().path != undefined? self.getParent().path: type;
+        if (!type || !_.isString(type)) {
+            throw new RulesConfigurationError("Invalid validator type", path);
+        }
+
+        if (!rules[type]) {
+            throw new RulesConfigurationError("Validator type " + type + " not found", path);
+        }
+
+        if (!this.value) {
+            throw new RulesConfigurationError("No value property found", path);
+        }
+
         return new Promise(function(resolve, reject){
             var error = {};
                 error[self.type] = self.getMessage(data);
@@ -605,10 +643,11 @@
             p = rules[self.type](data, self.value);
 
             if (_.isBoolean(p)) {
-                return p ? resolve() : reject(self.getError(data));
+                return p ? resolve(self.getCleanData(data)) : reject(self.getError(data));
             } else if (rulesUtils.isPromise(p)) {
-                p.then(function(){ return resolve(); })
-                 .catch(function(e){
+                p.then(function() {
+                    return resolve(self.getCleanData(data));
+                }).catch(function(e) {
                     return reject(self.getError(data));
                 });
             } else {
