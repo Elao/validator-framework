@@ -31,7 +31,7 @@
     "validation rules",
     "custom validators"
   ],
-  "main": "./src/validator.js",
+  "main": "src/validator.js",
   "dependencies": {
     "bluebird": "^2.0",
     "lodash": "^2.4.1"
