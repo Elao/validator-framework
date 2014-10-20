@@ -164,7 +164,6 @@
     ObjectValidatorError.prototype.flat = function()
     {
         var errors = {}; 
-        console.log(this.fieldErrors);
         _.each(this.fieldErrors, function(fieldError) {
 
             if(fieldError.name === 'RulesConfigurationError') {
