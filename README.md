@@ -1,6 +1,6 @@
 TODO
 
-Features:
+#Features:
 
     - Nested Objects validation
     - Custom rules
@@ -14,34 +14,35 @@ Features:
     - Custom field labels
 
 
-Description:
+#Description:
+
     validator-magic handle objects validation
 
-Install
+#Install
 
-npm install validator-magic
+    npm install validator-magic
 
 
-Usage:
+#Usage:
 
-var validator = require('validator-magic');
+    var validator = require('validator-magic');
 
-var myobject = {
-    username: 'Elao',
-    email:    'contact@elao.com',
-};
+    var myobject = {
+        username: 'Elao',
+        email:    'contact@elao.com',
+    };
 
-var rules = {
-    username: {required: true},
-    email:    {required: true, isEmail: true},
-    website:  {required: true, isUrl: true}
-};
+    var rules = {
+        username: {required: true},
+        email:    {required: true, isEmail: true},
+        website:  {required: true, isUrl: true}
+    };
 
-validator.ObjectValidator(rules).validate(myobject)
-         .then(function() { /** Validation succeed **/ })
-         .catch(function(e) {
-            /** Validation failed **/
-         })
+    validator.ObjectValidator(rules).validate(myobject)
+             .then(function() { /** Validation succeed **/ })
+             .catch(function(e) {
+                /** Validation failed **/
+             })
 
 
 => Nested objects validation
@@ -62,8 +63,6 @@ validator.ObjectValidator(rules).validate(myobject)
     required: ...
 
     isEmail: ...
-
-
 
 
 
