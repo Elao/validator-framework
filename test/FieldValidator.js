@@ -77,4 +77,37 @@ describe('#fieldValidator multiple custom validator', function() {
     })
 });
 
+describe("#fieldValidator custom validator", function() {
+    it('should handle conditional check with path configured', function() {
 
+        var fieldValidator = validator.FieldValidator(
+                {
+                    custom: function(fieldValue, ruleValue, data) {
+                        return data.id == "1" && fieldValue == "validator-framework"
+                    }
+                }, 'me'
+        );
+        fieldValidator.setPath("me");
+
+        return fieldValidator.validate({
+            me: "validator-framework",
+            id: "1"}
+        ).should.be.fulfilled;
+    })
+
+    it('should handle conditional check without path configured', function() {
+
+        var fieldValidator = validator.FieldValidator(
+                {
+                    custom: function(fieldValue, ruleValue, data) {
+                        return data.id == "1" && fieldValue.me == "validator-framework"
+                    }
+                }, 'me'
+        );
+
+        return fieldValidator.validate({
+            me: "validator-framework",
+            id: "1"}
+        ).should.be.fulfilled;
+    })
+})

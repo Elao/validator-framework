@@ -40,13 +40,13 @@ describe('#Validator validation groups', function() {
         return validator.Validator('required', {value: true, groups: ["test"]}).validate().should.be.fulfilled;
     });
     it('should not handle validation with mismatch groups', function() {
-        return validator.Validator('required', {value: true}).validate(null, {groups: "test"}).should.be.fulfilled;
+        return validator.Validator('required', {value: true}).validate(null, null, {groups: "test"}).should.be.fulfilled;
     });
     it('should handle validation with matching groups', function() {
-        return validator.Validator('required', {value: true, groups: ["test"]}).validate(null, {groups: "test"}).should.be.rejected;
+        return validator.Validator('required', {value: true, groups: ["test"]}).validate(null, null, {groups: "test"}).should.be.rejected;
     });
     it('sould handle validation with mismatch groups but default one', function() {
-       return validator.Validator('required', {value: true}).validate(null, {groups: ["test", "default"]}).should.be.rejected;
+       return validator.Validator('required', {value: true}).validate(null, null, {groups: ["test", "default"]}).should.be.rejected;
     });
 });
 
@@ -86,6 +86,12 @@ describe('#Validator Custom Rules Type', function() {
             return new Promise(function(resolve, reject) {
                 return fieldValue == 'test' ? resolve() : reject();
             });
+        },
+
+        testRulePromiseConditional: function(fieldValue, ruleValue, data) {
+            return new Promise(function(resolve, reject) {
+                return data.id == "1" && fieldValue == 'test' ? resolve() : reject();
+            });
         }
     };
 
@@ -108,6 +114,15 @@ describe('#Validator Custom Rules Type', function() {
 
     it('should recognize new promise rules and reject if value is incorrect', function() {
         return validator.Validator('testRulePromise', true).validate('not_test').should.be.rejected;
+    });
+
+
+    it('should recognize new promise rules with validation depending to extra data and fulfil if value is correct', function() {
+        return validator.Validator('testRulePromiseConditional', true).validate('test', {id: "1"}).should.be.fulfilled;
+    });
+
+    it('should recognize new promise rules with validation depending to extra data and reject if value is incorrect', function() {
+        return validator.Validator('testRulePromiseConditional', true).validate('test', {id: "2"}).should.be.rejected;
     });
 
 });

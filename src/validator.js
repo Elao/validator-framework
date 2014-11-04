@@ -404,7 +404,7 @@
             {
                 var validator = new Validator('required', self.rules.required);
                 validator.setParent(self);
-                validator.validate(fieldData, options)
+                validator.validate(fieldData, data, options)
                     .then(function() {
                         return resolve(self.doValidate(data, options));
                     })
@@ -448,7 +448,7 @@
                     }
                     var validator = new Validator(ruleType, ruleConfig);            // XXX Should add the global config
                     validator.setParent(self);
-                    promises.push(validator.validate(fieldData, options));
+                    promises.push(validator.validate(fieldData, data, options));
                 }
             });
 
@@ -612,7 +612,7 @@
         };
     }
 
-    Validator.prototype.doValidate = function(data)
+    Validator.prototype.doValidate = function(fieldData, data)
     {
         var self = this;
 
@@ -633,21 +633,21 @@
 
         return new Promise(function(resolve, reject){
             var error = {};
-                error[self.type] = self.getMessage(data);
+                error[self.type] = self.getMessage(fieldData);
 
             if (!rules[self.type]) {
 
             }
 
-            p = rules[self.type](data, self.value);
+            p = rules[self.type](fieldData, self.value, data);
 
             if (_.isBoolean(p)) {
-                return p ? resolve(self.getCleanData(data)) : reject(self.getError(data));
+                return p ? resolve(self.getCleanData(fieldData)) : reject(self.getError(fieldData));
             } else if (rulesUtils.isPromise(p)) {
                 p.then(function() {
-                    return resolve(self.getCleanData(data));
+                    return resolve(self.getCleanData(fieldData));
                 }).catch(function(e) {
-                    return reject(self.getError(data));
+                    return reject(self.getError(fieldData));
                 });
             } else {
                 return reject(new RulesConfigurationError("Validator should return a Promise or a boolean and not " + (typeof p)));
@@ -655,12 +655,12 @@
         });
     };
 
-    Validator.prototype.validate = function(data, options)
+    Validator.prototype.validate = function(fieldData, data, options)
     {
         if (matchGroups(options ? options.groups : undefined, this.groups)) {
-            return this.doValidate(data);
+            return this.doValidate(fieldData, data);
         } else {
-            return Promise.resolve(data);
+            return Promise.resolve(fieldData);
         }
     };
 

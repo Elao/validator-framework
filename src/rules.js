@@ -177,8 +177,7 @@ var ruleHandlers = {
             if (!_.isFunction(ruleValue)) {
                 return false;
             }
-
-            return ruleValue(fieldValue);
+            return ruleValue(fieldValue, ruleValue, data);
         },
 
         dependsOn: function(fieldValue, ruleValue, data) {
