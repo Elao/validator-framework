@@ -1,7 +1,7 @@
 {
   "name": "validator-framework",
   "description": "Objects Validator Framework (supports: Async validation, validation groups, nested objects, ...)",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "licenses": [
     {
       "type": "MIT",
